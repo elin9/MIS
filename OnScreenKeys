@@ -1,0 +1,102 @@
+using System;
+using System.Windows.Forms;
+using System.Drawing;
+
+public class Butevent:Form  {
+
+        RichTextBox t1 = new RichTextBox();
+
+        static string[] characters = {
+                "q",
+                "w",
+                "e",
+                "r",
+                "t",
+                "y",
+                "u",
+                "i",
+                "o",
+                "p",
+                "a",
+                "s",
+                "d",
+                "f",
+                "g",
+                "h",
+                "j",
+                "k",
+                "l",
+                ".",
+                "z",
+                "x",
+                "c",
+                "v",
+                "b",
+                "SPACE",
+                "n",
+                "m",
+                "ENTER",
+                "BACK SPACE"
+        };
+
+        static int clength = characters.Length;
+        Button[] buttons = new Button[clength];
+
+        public Butevent() {
+                this.Size = new System.Drawing.Size(1200, 480);
+                this.BackColor = System.Drawing.Color.Lavender;
+                this.Controls.Add(t1);
+                t1.Location = new Point(5,5);
+                t1.Size = new Size (1150, 20);
+                int x = 85;
+                int y = 75;
+
+                for (int i = 0; i < characters.Length; i++) {
+                        buttons [i] = new Button ();
+                        buttons [i].Text = characters [i];
+                        buttons [i].Size = new Size (60, 60);
+                        buttons [i].BackColor = System.Drawing.Color.MintCream;
+                        this.Controls.Add (buttons [i]);
+
+                        buttons[i].MouseEnter += new EventHandler (OnMouseEnter);
+                        buttons[i].MouseLeave += new EventHandler (OnMouseLeave);
+
+                        buttons [i].Location = new Point (x, y);
+
+                        x += 100;
+                        if (i == 9 || i == 19 || i == 29 || i == 39) {
+                                y += 125;
+                                x = 85;
+                        }
+                }
+        }
+
+        public void OnMouseEnter(object sender,EventArgs e) {
+                Button b0 = sender as Button;
+                b0.BackColor = System.Drawing.Color.Thistle;
+                if (b0.Text == "SPACE")
+                        t1.Text += " ";
+                else if (b0.Text == "ENTER") {
+                        t1.Text += "\n";
+                        t1.Size = new Size (1150, 40);
+                } 
+                else if (b0.Text == "BACK SPACE") {
+                        if (t1.Text.Length > 0)
+                                t1.Text = t1.Text.Substring (0, t1.Text.Length - 1);
+                }
+                else t1.Text += b0.Text;
+
+                t1.SelectionStart = t1.Text.Length;
+        }
+
+        public void OnMouseLeave(object sender,EventArgs e) {
+                Button b0 = sender as Button;
+                b0.BackColor = System.Drawing.Color.MintCream;
+        }
+
+        public static void Main() {
+
+                Application.Run(new Butevent());
+
+        }
+}
