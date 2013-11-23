@@ -1,11 +1,13 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
-using System.Threading;
+//using System.Threading;
+//using System.Threading.Tasks;
 
 public class Butevent:Form  {
 
 	static RichTextBox t1 = new RichTextBox();
+	//static System.Windows.Forms.Timer mytimer = new System.Windows.Forms.Timer();
 
 	static string[] characters = {
 		"q",
@@ -84,6 +86,8 @@ public class Butevent:Form  {
 		this.Size = new System.Drawing.Size(1200, 550);
 		this.BackColor = System.Drawing.Color.Lavender;
 		this.Controls.Add(t1);
+		this.MouseLeave += new EventHandler (OnMouseLeaveForm);
+		this.MouseEnter += new EventHandler (OnMouseEnterForm);
 
 		t1.Location = new Point(5,5);
 		t1.Size = new Size (1150, 30);
@@ -101,13 +105,13 @@ public class Butevent:Form  {
 			buttons[i].MouseEnter += new EventHandler(OnMouseEnter);
 			buttons[i].MouseLeave += new EventHandler(OnMouseLeave);
 			//buttons[i].Click += new EventHandler (OnClick);
-			//buttons[i].MouseDown += new MouseEventHandler(MouseDown);
-			//buttons[i].MouseUp += new MouseEventHandler(MouseUp);
+			//buttons[i].MouseDown += new MouseEventHandler(OnMouseDown);
+			//buttons[i].MouseUp += new MouseEventHandler(OnMouseUp);
 
-			if (buttons [i].Text.Length > 3)
-				buttons [i].Font = new Font ("Tahoma", 10);
+			if (buttons[i].Text.Length > 3)
+				buttons[i].Font = new Font ("Tahoma", 10);
 
-			buttons[i].Location = new Point (x, y);
+			buttons[i].Location = new Point(x, y);
 			x += 110;
 			if (i == 9 || i == 19 || i == 29 || i == 39) {
 				y += 130;
@@ -122,6 +126,7 @@ public class Butevent:Form  {
 	public void OnMouseEnter(object sender,EventArgs e) {
 		Button b0 = sender as Button;
 		b0.BackColor = System.Drawing.Color.Thistle;
+		this.Opacity = 1;
 
 		if (b0.Text == "SPACE") {
 			t1.Text += " ";
@@ -158,12 +163,23 @@ public class Butevent:Form  {
 		b0.BackColor = System.Drawing.Color.MintCream;
 	}
 
-	/*public void OnClick(object sender,EventArgs e) {
-		int counter = 0;
-		bool stop = false;
+	public void OnMouseEnterForm(object sender,EventArgs e) {
+		this.Opacity = 1;
+	}
+	public void OnMouseLeaveForm(object sender,EventArgs e) {
+		this.Opacity = .50;
+	}
+
+	/*public async void OnClick(object sender,EventArgs e) {
+		//int counter = 0;
+		//bool stop = false;
 
 		Button b0 = sender as Button;
 		b0.BackColor = System.Drawing.Color.Plum;
+
+		t1.Text += b0.Text;
+		await Task.Delay (2000);
+		t1.Text += b0.Text;
 
 		Thread countThread = new Thread (() => {
 			while (!stop) {
@@ -172,22 +188,36 @@ public class Butevent:Form  {
 				Thread.Sleep (100);
 			}
 		});
-	}
-	private bool buttonDown;
-	public void MouseDown(object sender, EventArgs e) {
+	}*/
+
+	//private bool buttonDown;
+	/*public void OnMouseDown(object sender, EventArgs e) {
 		Button b0 = sender as Button;
 		b0.BackColor = System.Drawing.Color.Plum;
+
+		//mytimer.Enabled = true;
+		//mytimer.Start ();
+
+		//while (e.Equals(true)) {
+			//t1.Text += b0.Text;
+			//mytimer.Tick += new EventHandler(timer_Tick);
+			//await Task.Delay (0020);
+		//}
+
+		//Task.Delay (2000).ContinueWith (t1.Text += b0.Text);
 
 		buttonDown = true;
 		do {
 			t1.Text += b0.Text;
 		} while(buttonDown);
 	}
-	public void MouseUp(object sender, EventArgs e) {
-		Button b0 = sender as Button;
-		b0.BackColor = System.Drawing.Color.Plum;
 
-		buttonDown = false;
+	public void OnMouseUp(object sender, EventArgs e) {
+		Button b0 = sender as Button;
+		b0.BackColor = System.Drawing.Color.MintCream;
+
+		//mytimer.Stop();
+		//buttonDown = false;
 	}*/
 
 	/*static public void timer_Tick(object sender, EventArgs e) {
@@ -198,15 +228,13 @@ public class Butevent:Form  {
 	}*/
 
 	public static void Main() {
-
-		/*System.Windows.Forms.Timer timer = System.Windows.Forms.Timer();
-		timer.Interval = 5000;
-		timer.Tick += new EventHandler(timer_Tick);
-		timer.Start();*/
+		
+		/*mytimer.Interval = 2000;
+		mytimer.Tick += new EventHandler(timer_Tick);
+		mytimer.Start ();*/
 
 		Application.Run(new Butevent());
-
-
 	}
+
 }
 
