@@ -1,0 +1,293 @@
+using System;
+using System.Windows.Forms;
+using System.Drawing;
+//using System.Threading;
+//using System.Threading.Tasks;
+
+public class Butevent:Form  {
+
+	static RichTextBox t1 = new RichTextBox();
+	//static System.Windows.Forms.Timer mytimer = new System.Windows.Forms.Timer();
+
+	static string[] characters = {
+		"q",
+		"w",
+		"e",
+		"r",
+		"t",
+		"y",
+		"u",
+		"i",
+		"o",
+		"p",
+		"a",
+		"s",
+		"d",
+		"f",
+		"g",
+		"h",
+		"j",
+		"k",
+		"l",
+		"TAB",
+		"z",
+		"x",
+		"c",
+		"v",
+		"SPACE",
+		"b",
+		"n",
+		"m",
+		"ENTER",
+		"BACK SPACE",
+		"123  #+=",		//toggle for numbers and other characters
+		"ABC",			//toggle for uppercase
+		"COPY",
+		"PASTE",
+		"CLEAR"
+	};
+
+	static string[] numpunc = {
+		"1",
+		"2",
+		"3",
+		"4",
+		"5",
+		"6",
+		"7",
+		"8",
+		"9",
+		"0",
+		".",
+		",",
+		"?",
+		"!",
+		":",
+		";",
+		"\'",
+		"\"",
+		"/",
+		"TAB",
+		"(",
+		")",
+		"-",
+		"*",
+		"SPACE",
+		"@",
+		"=",
+		"+",
+		"ENTER",
+		"BACK SPACE",
+		"abc",			//toggle for lowercase
+		"ABC",			//toggle for uppercase
+		"COPY",
+		"PASTE",
+		"CLEAR"
+	};
+
+	static int clength = characters.Length;
+	static Button[] buttons = new Button[clength];
+
+	static int wwidth = 1200;
+	static int wheight = 550;
+
+	public Butevent() {
+		this.Size = new System.Drawing.Size(wwidth, wheight);
+		this.BackColor = System.Drawing.Color.Lavender;
+		this.Location = new Point (0, -300);
+		this.Controls.Add(t1);
+		this.MouseLeave += new EventHandler (OnMouseLeaveForm);
+		this.MouseEnter += new EventHandler (OnMouseEnterForm);
+		this.Resize += new EventHandler (OnResizeWindow);
+
+		this.Width = wwidth;
+		this.Height = wheight;
+
+		t1.Location = new Point(5,5);
+		t1.Size = new Size (1150, 30);
+		t1.GotFocus += new EventHandler (OnGotFocus);
+
+		int x = 50;
+		int y = 50;
+
+		for (int i = 0; i < characters.Length; i++) {
+			buttons[i] = new Button();
+			buttons[i].Font = new Font ("Tahoma", 16);
+			buttons[i].Text = characters[i];
+			buttons[i].Size = new Size (60, 60);
+			buttons[i].BackColor = System.Drawing.Color.MintCream;
+
+			buttons[i].MouseEnter += new EventHandler(OnMouseEnter);
+			buttons[i].MouseLeave += new EventHandler(OnMouseLeave);
+			//buttons[i].Click += new EventHandler (OnClick);
+			//buttons[i].MouseDown += new MouseEventHandler(OnMouseDown);
+			//buttons[i].MouseUp += new MouseEventHandler(OnMouseUp);
+
+			if (buttons[i].Text.Length > 3)
+				buttons[i].Font = new Font ("Tahoma", 10);
+
+			buttons[i].Location = new Point(x, y);
+			x += 110;
+			if (i == 9 || i == 19 || i == 29 || i == 39) {
+				y += 130;
+				x = 50;
+			}
+
+			this.Controls.Add(buttons[i]);
+			t1.Font = new Font("Tahoma", 15);
+		}
+	}
+
+	public void OnMouseEnter(object sender,EventArgs e) {
+		Button b0 = sender as Button;
+		b0.BackColor = System.Drawing.Color.Thistle;
+		this.Opacity = 1;
+
+		if (b0.Text == "SPACE") {
+			t1.Text += " ";
+		} else if (b0.Text == "ENTER") {
+			t1.Text += "\n";
+			t1.Size = new Size (1150, 40);
+		} else if (b0.Text == "BACK SPACE") {
+			if (t1.Text.Length > 0)
+				//t1.Text = t1.Text.Substring (0, t1.Text.Length - 1);
+				t1.Text = t1.Text.Remove (t1.Text.Length - 1, 1);
+		} else if (b0.Text == "TAB") {
+			t1.Text += "\t";
+		} else if (b0.Text == "123  #+=") {
+			for (int i = 0; i < characters.Length; i++) {
+				buttons [i].Text = numpunc [i];
+			}
+		} else if (b0.Text == "abc") {
+			for (int i = 0; i < characters.Length; i++) {
+				buttons [i].Text = characters [i];
+			}
+		} else if (b0.Text == "ABC") {
+			for (int i = 0; i < characters.Length; i++) {
+				buttons [i].Text = characters [i].ToUpper ();
+			}
+			b0.Text = "abc";
+		} else if (b0.Text == "COPY") {
+			t1.SelectAll ();
+			t1.Focus ();
+			t1.Copy ();
+			t1.SelectionStart = 0;
+			t1.SelectionLength = t1.Text.Length;
+			t1.SelectionBackColor = Color.LightBlue;
+		} else if (b0.Text == "PASTE") {
+			t1.Paste ();
+			t1.SelectionStart = 0;
+			t1.SelectionLength = t1.Text.Length;
+			t1.SelectionBackColor = Color.White;
+		} else if (b0.Text == "CLEAR") {
+			DialogResult r1 = MessageBox.Show ("Are you sure you want to clear all?", "Deleting all...", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+			if(r1 == DialogResult.Yes) t1.Text = "";
+		}
+		else t1.Text += b0.Text;
+
+		t1.SelectionStart = t1.Text.Length; //text cursor location
+	} //end of MouseEnter method
+
+	public void OnGotFocus(object sender, EventArgs e) {
+		t1.Tag = true;
+	}
+
+	public void OnMouseLeave(object sender,EventArgs e) {
+		Button b0 = sender as Button;
+		b0.BackColor = System.Drawing.Color.MintCream;
+	}
+
+	public void OnMouseEnterForm(object sender,EventArgs e) {
+		this.Opacity = 1;
+	}
+	public void OnMouseLeaveForm(object sender,EventArgs e) {
+		this.Opacity = .50;
+	}
+
+	public void OnResizeWindow(object sender, EventArgs e) {
+		wwidth = this.Width;
+		wheight = this.Height;
+		int x1 = 50;
+		int y1 = 50;
+		for (int i = 0; i < buttons.Length; i++) {
+			buttons[i].Size = new Size (wwidth/20, wwidth/20);
+			buttons[i].Location = new Point(x1, y1);
+			buttons[i].Font = new Font ("Tahoma", wwidth/75);
+			x1 += wwidth/(120/10);
+			if (i == 9 || i == 19 || i == 29 || i == 39) {
+				y1 += wwidth/ (120/11);
+				x1 = 50;
+			}
+			if (buttons[i].Text.Length > 2)
+				buttons[i].Font = new Font ("Tahoma", wwidth/120);
+		}
+	}
+
+	/*public async void OnClick(object sender,EventArgs e) {
+		//int counter = 0;
+		//bool stop = false;
+
+		Button b0 = sender as Button;
+		b0.BackColor = System.Drawing.Color.Plum;
+
+		t1.Text += b0.Text;
+		await Task.Delay (2000);
+		t1.Text += b0.Text;
+
+		Thread countThread = new Thread (() => {
+			while (!stop) {
+				counter++;
+				t1.Text += b0.Text;
+				Thread.Sleep (100);
+			}
+		});
+	}*/
+
+	//private bool buttonDown;
+	/*public void OnMouseDown(object sender, EventArgs e) {
+		Button b0 = sender as Button;
+		//b0.BackColor = System.Drawing.Color.Plum;
+
+		//mytimer.Enabled = true;
+		//mytimer.Start ();
+
+		//while (e.Equals(true)) {
+			//t1.Text += b0.Text;
+			//mytimer.Tick += new EventHandler(timer_Tick);
+			//await Task.Delay (0020);
+		//}
+
+		//Task.Delay (2000).ContinueWith (t1.Text += b0.Text);
+
+		/*buttonDown = true;
+		do {
+			t1.Text += b0.Text;
+		} while(buttonDown);
+	}*/
+
+	/*public void OnMouseUp(object sender, EventArgs e) {
+		Button b0 = sender as Button;
+		b0.BackColor = System.Drawing.Color.MintCream;
+
+		//mytimer.Stop();
+		//buttonDown = false;
+	}*/
+
+	/*static public void timer_Tick(object sender, EventArgs e) {
+		Button b0 = sender as Button;
+		b0.BackColor = System.Drawing.Color.Plum;
+
+		t1.Text += b0.Text;
+	}*/
+
+	public static void Main() {
+		
+		/*mytimer.Interval = 2000;
+		mytimer.Tick += new EventHandler(timer_Tick);
+		mytimer.Start ();*/
+
+		Application.Run(new Butevent());
+	}
+
+}
+
