@@ -1,6 +1,7 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Diagnostics;
 //using System.Threading;
 //using System.Threading.Tasks;
 
@@ -8,6 +9,7 @@ public class Butevent:Form  {
 
 	static RichTextBox t1 = new RichTextBox();
 	//static System.Windows.Forms.Timer mytimer = new System.Windows.Forms.Timer();
+	Stopwatch stopwatch = new Stopwatch();
 
 	static string[] characters = {
 		"q",
@@ -106,6 +108,7 @@ public class Butevent:Form  {
 		t1.Location = new Point(5,5);
 		t1.Size = new Size (1150, 30);
 		t1.GotFocus += new EventHandler (OnGotFocus);
+		t1.MouseEnter += new EventHandler (OnMouseEnterForm);
 
 		int x = 50;
 		int y = 50;
@@ -119,7 +122,7 @@ public class Butevent:Form  {
 
 			buttons[i].MouseEnter += new EventHandler(OnMouseEnter);
 			buttons[i].MouseLeave += new EventHandler(OnMouseLeave);
-			//buttons[i].Click += new EventHandler (OnClick);
+			buttons[i].Click += new EventHandler (OnClick);
 			//buttons[i].MouseDown += new MouseEventHandler(OnMouseDown);
 			//buttons[i].MouseUp += new MouseEventHandler(OnMouseUp);
 
@@ -171,20 +174,24 @@ public class Butevent:Form  {
 			t1.SelectAll ();
 			t1.Focus ();
 			t1.Copy ();
-			t1.SelectionStart = 0;
-			t1.SelectionLength = t1.Text.Length;
-			t1.SelectionBackColor = Color.LightBlue;
 		} else if (b0.Text == "PASTE") {
 			t1.Paste ();
-			t1.SelectionStart = 0;
-			t1.SelectionLength = t1.Text.Length;
-			t1.SelectionBackColor = Color.White;
 		} else if (b0.Text == "CLEAR") {
 			DialogResult r1 = MessageBox.Show ("Are you sure you want to clear all?", "Deleting all...", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 			if(r1 == DialogResult.Yes) t1.Text = "";
 		}
 		else t1.Text += b0.Text;
 
+		//Highlighting functionality
+		if (b0.Text == "COPY") {
+			t1.SelectionStart = 0;
+			t1.SelectionLength = t1.Text.Length;
+			t1.SelectionBackColor = Color.LightBlue;
+		} else {
+			t1.SelectionStart = 0;
+			t1.SelectionLength = t1.Text.Length;
+			t1.SelectionBackColor = Color.White;
+		}
 		t1.SelectionStart = t1.Text.Length; //text cursor location
 	} //end of MouseEnter method
 
@@ -207,6 +214,7 @@ public class Butevent:Form  {
 	public void OnResizeWindow(object sender, EventArgs e) {
 		wwidth = this.Width;
 		wheight = this.Height;
+		t1.Anchor = (AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Left);
 		int x1 = 50;
 		int y1 = 50;
 		for (int i = 0; i < buttons.Length; i++) {
@@ -223,25 +231,26 @@ public class Butevent:Form  {
 		}
 	}
 
-	/*public async void OnClick(object sender,EventArgs e) {
+	public void OnClick(object sender,EventArgs e) {
 		//int counter = 0;
 		//bool stop = false;
 
 		Button b0 = sender as Button;
 		b0.BackColor = System.Drawing.Color.Plum;
+		
+		/*do {
+			t1.Text += b0.Text;
+		} while(stopwatch.Start());*/
+		//await Task.Delay (2000);
 
-		t1.Text += b0.Text;
-		await Task.Delay (2000);
-		t1.Text += b0.Text;
-
-		Thread countThread = new Thread (() => {
+		/*Thread countThread = new Thread (() => {
 			while (!stop) {
 				counter++;
 				t1.Text += b0.Text;
 				Thread.Sleep (100);
 			}
-		});
-	}*/
+		});*/
+	}
 
 	//private bool buttonDown;
 	/*public void OnMouseDown(object sender, EventArgs e) {
@@ -287,7 +296,8 @@ public class Butevent:Form  {
 		mytimer.Start ();*/
 
 		Application.Run(new Butevent());
-	}
 
-}
+	} //end of main
+
+} //end of class
 
