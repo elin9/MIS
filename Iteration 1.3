@@ -2,13 +2,12 @@ using System;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Diagnostics;
-//using System.Threading;
-//using System.Threading.Tasks;
+using System.Threading;
+using System.Threading.Tasks;
 
 public class Butevent:Form  {
 
 	static RichTextBox t1 = new RichTextBox();
-	//static System.Windows.Forms.Timer mytimer = new System.Windows.Forms.Timer();
 	Stopwatch stopwatch = new Stopwatch();
 
 	static string[] characters = {
@@ -111,7 +110,7 @@ public class Butevent:Form  {
 		t1.MouseEnter += new EventHandler (OnMouseEnterForm);
 
 		int x = 50;
-		int y = 50;
+		int y = 50;		
 
 		for (int i = 0; i < characters.Length; i++) {
 			buttons[i] = new Button();
@@ -122,9 +121,11 @@ public class Butevent:Form  {
 
 			buttons[i].MouseEnter += new EventHandler(OnMouseEnter);
 			buttons[i].MouseLeave += new EventHandler(OnMouseLeave);
-			buttons[i].Click += new EventHandler (OnClick);
-			//buttons[i].MouseDown += new MouseEventHandler(OnMouseDown);
-			//buttons[i].MouseUp += new MouseEventHandler(OnMouseUp);
+
+			if (i < 30) {
+				buttons [i].MouseDown += new MouseEventHandler (OnMouseDown);
+				buttons [i].MouseUp += new MouseEventHandler (OnMouseUp);
+			}
 
 			if (buttons[i].Text.Length > 3)
 				buttons[i].Font = new Font ("Tahoma", 10);
@@ -231,69 +232,45 @@ public class Butevent:Form  {
 		}
 	}
 
-	public void OnClick(object sender,EventArgs e) {
-		//int counter = 0;
-		//bool stop = false;
-
+	private bool buttonDown;
+	public async void OnMouseDown(object sender, EventArgs e) {
 		Button b0 = sender as Button;
 		b0.BackColor = System.Drawing.Color.Plum;
-		
-		/*do {
-			t1.Text += b0.Text;
-		} while(stopwatch.Start());*/
-		//await Task.Delay (2000);
 
-		/*Thread countThread = new Thread (() => {
-			while (!stop) {
-				counter++;
-				t1.Text += b0.Text;
-				Thread.Sleep (100);
+		buttonDown = true;
+
+		while (buttonDown) {
+			if (b0.Text == "SPACE") {
+				t1.Text += " ";
+			} else if (b0.Text == "ENTER") {
+				t1.Text += "\n";
+				t1.Size = new Size (1150, 40);
+			} else if (b0.Text == "BACK SPACE") {
+				if (t1.Text.Length > 0)
+					t1.Text = t1.Text.Remove (t1.Text.Length - 1, 1);
+			} else if (b0.Text == "TAB") {
+				t1.Text += "\t";
 			}
-		});*/
+			/*else if (b0.Text == "123  #+=") {}
+			else if (b0.Text == "abc") {}
+			else if (b0.Text == "ABC") {} 
+			else if (b0.Text == "COPY") {}
+			else if (b0.Text == "PASTE") {}
+			else if (b0.Text == "CLEAR") {}*/
+			else t1.Text += b0.Text;
+
+			await Task.Delay(100); //timing interval
+		}
 	}
 
-	//private bool buttonDown;
-	/*public void OnMouseDown(object sender, EventArgs e) {
-		Button b0 = sender as Button;
-		//b0.BackColor = System.Drawing.Color.Plum;
-
-		//mytimer.Enabled = true;
-		//mytimer.Start ();
-
-		//while (e.Equals(true)) {
-			//t1.Text += b0.Text;
-			//mytimer.Tick += new EventHandler(timer_Tick);
-			//await Task.Delay (0020);
-		//}
-
-		//Task.Delay (2000).ContinueWith (t1.Text += b0.Text);
-
-		/*buttonDown = true;
-		do {
-			t1.Text += b0.Text;
-		} while(buttonDown);
-	}*/
-
-	/*public void OnMouseUp(object sender, EventArgs e) {
+	public void OnMouseUp(object sender, EventArgs e) {
 		Button b0 = sender as Button;
 		b0.BackColor = System.Drawing.Color.MintCream;
 
-		//mytimer.Stop();
-		//buttonDown = false;
-	}*/
-
-	/*static public void timer_Tick(object sender, EventArgs e) {
-		Button b0 = sender as Button;
-		b0.BackColor = System.Drawing.Color.Plum;
-
-		t1.Text += b0.Text;
-	}*/
+		buttonDown = false;
+	}
 
 	public static void Main() {
-		
-		/*mytimer.Interval = 2000;
-		mytimer.Tick += new EventHandler(timer_Tick);
-		mytimer.Start ();*/
 
 		Application.Run(new Butevent());
 
