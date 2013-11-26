@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 public class Butevent:Form  {
 
 	static RichTextBox t1 = new RichTextBox();
-	Stopwatch stopwatch = new Stopwatch();
 
 	static string[] characters = {
 		"q",
@@ -89,16 +88,16 @@ public class Butevent:Form  {
 	static int clength = characters.Length;
 	static Button[] buttons = new Button[clength];
 
-	static int wwidth = 1200;
-	static int wheight = 550;
+	static int wwidth = 1200;		//window width
+	static int wheight = 550;		//window height
 
 	public Butevent() {
 		this.Size = new System.Drawing.Size(wwidth, wheight);
 		this.BackColor = System.Drawing.Color.Lavender;
-		this.Location = new Point (0, -300);
+		this.Location = new Point (-500, 500);
 		this.Controls.Add(t1);
-		this.MouseLeave += new EventHandler (OnMouseLeaveForm);
-		this.MouseEnter += new EventHandler (OnMouseEnterForm);
+		this.MouseLeave += new EventHandler (OnMouseLeaveForm);		//for window transparency
+		this.MouseEnter += new EventHandler (OnMouseEnterForm);		//for window opacity
 		this.Resize += new EventHandler (OnResizeWindow);
 
 		this.Width = wwidth;
@@ -106,11 +105,12 @@ public class Butevent:Form  {
 
 		t1.Location = new Point(5,5);
 		t1.Size = new Size (1150, 30);
+		t1.Font = new Font("Tahoma", 15);
 		t1.GotFocus += new EventHandler (OnGotFocus);
-		t1.MouseEnter += new EventHandler (OnMouseEnterForm);
+		t1.MouseEnter += new EventHandler (OnMouseEnterForm);		//for window opacity
 
 		int x = 50;
-		int y = 50;		
+		int y = 50;
 
 		for (int i = 0; i < characters.Length; i++) {
 			buttons[i] = new Button();
@@ -119,9 +119,11 @@ public class Butevent:Form  {
 			buttons[i].Size = new Size (60, 60);
 			buttons[i].BackColor = System.Drawing.Color.MintCream;
 
+			//Hover over action
 			buttons[i].MouseEnter += new EventHandler(OnMouseEnter);
 			buttons[i].MouseLeave += new EventHandler(OnMouseLeave);
 
+			//Click action (not applied to special keys: "123 #+=", "abc", "ABC", "COPY", "PASTE", "CLEAR")
 			if (i < 30) {
 				buttons [i].MouseDown += new MouseEventHandler (OnMouseDown);
 				buttons [i].MouseUp += new MouseEventHandler (OnMouseUp);
@@ -130,6 +132,7 @@ public class Butevent:Form  {
 			if (buttons[i].Text.Length > 3)
 				buttons[i].Font = new Font ("Tahoma", 10);
 
+			//Grid layout
 			buttons[i].Location = new Point(x, y);
 			x += 110;
 			if (i == 9 || i == 19 || i == 29 || i == 39) {
@@ -138,10 +141,13 @@ public class Butevent:Form  {
 			}
 
 			this.Controls.Add(buttons[i]);
-			t1.Font = new Font("Tahoma", 15);
 		}
-	}
+	} //end of Butevent
 
+	/**
+	 * Actions for hover over event 
+	 * if's and elseif's deal with special keys
+	*/
 	public void OnMouseEnter(object sender,EventArgs e) {
 		Button b0 = sender as Button;
 		b0.BackColor = System.Drawing.Color.Thistle;
@@ -154,21 +160,20 @@ public class Butevent:Form  {
 			t1.Size = new Size (1150, 40);
 		} else if (b0.Text == "BACK SPACE") {
 			if (t1.Text.Length > 0)
-				//t1.Text = t1.Text.Substring (0, t1.Text.Length - 1);
 				t1.Text = t1.Text.Remove (t1.Text.Length - 1, 1);
 		} else if (b0.Text == "TAB") {
 			t1.Text += "\t";
-		} else if (b0.Text == "123  #+=") {
+		} else if (b0.Text == "123  #+=") {					//toggle to numbers and other symbols
 			for (int i = 0; i < characters.Length; i++) {
 				buttons [i].Text = numpunc [i];
 			}
-		} else if (b0.Text == "abc") {
+		} else if (b0.Text == "abc") {						//toggle back to lowercase letters
 			for (int i = 0; i < characters.Length; i++) {
 				buttons [i].Text = characters [i];
 			}
-		} else if (b0.Text == "ABC") {
+		} else if (b0.Text == "ABC") {						//toggle to uppercase letters
 			for (int i = 0; i < characters.Length; i++) {
-				buttons [i].Text = characters [i].ToUpper ();
+				buttons [i].Text = characters [i].ToUpper();
 			}
 			b0.Text = "abc";
 		} else if (b0.Text == "COPY") {
@@ -193,25 +198,37 @@ public class Butevent:Form  {
 			t1.SelectionLength = t1.Text.Length;
 			t1.SelectionBackColor = Color.White;
 		}
+
+		t1.Focus();
 		t1.SelectionStart = t1.Text.Length; //text cursor location
 	} //end of MouseEnter method
 
-	public void OnGotFocus(object sender, EventArgs e) {
-		t1.Tag = true;
-	}
-
+	/**
+	 * End of hover over action
+	*/
 	public void OnMouseLeave(object sender,EventArgs e) {
 		Button b0 = sender as Button;
 		b0.BackColor = System.Drawing.Color.MintCream;
 	}
 
+	/**
+	 * Window stays opaque when mouse is on the form
+	*/
 	public void OnMouseEnterForm(object sender,EventArgs e) {
 		this.Opacity = 1;
 	}
+	/**
+	 * Window becomes transparent when mouse leaves form
+	 * ***Needs debugging***
+	 * Not recognizing the edges of the windows as a part of the form
+	*/
 	public void OnMouseLeaveForm(object sender,EventArgs e) {
 		this.Opacity = .50;
 	}
 
+	/**
+	 * Functionality for resizing the window, which scales all buttons and fonts proportionally
+	*/
 	public void OnResizeWindow(object sender, EventArgs e) {
 		wwidth = this.Width;
 		wheight = this.Height;
@@ -232,6 +249,10 @@ public class Butevent:Form  {
 		}
 	}
 
+	/**
+	 * Actions for click event
+	 * (AKA the solution to our "backspace problem": holding down a key types that key continuously at a certain pace)
+	*/
 	private bool buttonDown;
 	public async void OnMouseDown(object sender, EventArgs e) {
 		Button b0 = sender as Button;
@@ -251,18 +272,19 @@ public class Butevent:Form  {
 			} else if (b0.Text == "TAB") {
 				t1.Text += "\t";
 			}
-			/*else if (b0.Text == "123  #+=") {}
-			else if (b0.Text == "abc") {}
-			else if (b0.Text == "ABC") {} 
-			else if (b0.Text == "COPY") {}
-			else if (b0.Text == "PASTE") {}
-			else if (b0.Text == "CLEAR") {}*/
 			else t1.Text += b0.Text;
 
-			await Task.Delay(100); //timing interval
-		}
-	}
+			t1.Focus();
+			t1.SelectionStart = t1.Text.Length; //text cursor location
 
+			await Task.Delay(80); //timing interval
+		}
+	} //end of OnMouseDown
+
+	/**
+	 * End of click event
+	 * Stops the while loop from "OnMouseDown" method
+	*/
 	public void OnMouseUp(object sender, EventArgs e) {
 		Button b0 = sender as Button;
 		b0.BackColor = System.Drawing.Color.MintCream;
@@ -270,10 +292,16 @@ public class Butevent:Form  {
 		buttonDown = false;
 	}
 
+	/**
+	 * Puts the textbox in focus
+	*/
+	public void OnGotFocus(object sender, EventArgs e) {
+		t1.Tag = true;
+	}
+
+	//Main
 	public static void Main() {
-
 		Application.Run(new Butevent());
-
 	} //end of main
 
 } //end of class
